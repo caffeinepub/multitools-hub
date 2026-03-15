@@ -1,8 +1,9 @@
 import { Textarea } from "@/components/ui/textarea";
-import { useMemo } from "react";
-import { useState } from "react";
+import { useTranslation } from "@/lib/i18n";
+import { useMemo, useState } from "react";
 
 export default function WordCounter() {
+  const { t } = useTranslation();
   const [text, setText] = useState("");
 
   const stats = useMemo(() => {
@@ -25,13 +26,13 @@ export default function WordCounter() {
   }, [text]);
 
   const statItems = [
-    { label: "Characters", value: stats.chars },
-    { label: "Chars (no spaces)", value: stats.charsNoSpace },
-    { label: "Words", value: stats.words },
-    { label: "Sentences", value: stats.sentences },
-    { label: "Paragraphs", value: stats.paragraphs },
-    { label: "Reading time", value: `~${stats.readingTime} min` },
-    { label: "Speaking time", value: `~${stats.speakingTime} min` },
+    { labelKey: "wc_chars" as const, value: stats.chars },
+    { labelKey: "wc_chars_nospace" as const, value: stats.charsNoSpace },
+    { labelKey: "wc_words" as const, value: stats.words },
+    { labelKey: "wc_sentences" as const, value: stats.sentences },
+    { labelKey: "wc_paragraphs" as const, value: stats.paragraphs },
+    { labelKey: "wc_reading" as const, value: `~${stats.readingTime} min` },
+    { labelKey: "wc_speaking" as const, value: `~${stats.speakingTime} min` },
   ];
 
   return (
@@ -40,18 +41,18 @@ export default function WordCounter() {
         data-ocid="counter.input"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Start typing or paste text to count..."
+        placeholder={t("wc_placeholder")}
         className="min-h-[200px]"
       />
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {statItems.map((item) => (
           <div
-            key={item.label}
+            key={item.labelKey}
             className="bg-card border rounded-lg p-3 text-center"
           >
             <div className="text-2xl font-bold text-primary">{item.value}</div>
             <div className="text-xs text-muted-foreground mt-1">
-              {item.label}
+              {t(item.labelKey)}
             </div>
           </div>
         ))}

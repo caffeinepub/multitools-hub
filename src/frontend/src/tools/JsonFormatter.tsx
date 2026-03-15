@@ -8,11 +8,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/lib/i18n";
 import { CheckCircle, Copy, XCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function JsonFormatter() {
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [indent, setIndent] = useState("2");
@@ -66,34 +68,34 @@ export default function JsonFormatter() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="2">2 spaces</SelectItem>
-            <SelectItem value="4">4 spaces</SelectItem>
-            <SelectItem value="tab">Tab</SelectItem>
+            <SelectItem value="2">{t("json_2spaces")}</SelectItem>
+            <SelectItem value="4">{t("json_4spaces")}</SelectItem>
+            <SelectItem value="tab">{t("json_tab")}</SelectItem>
           </SelectContent>
         </Select>
         <Button data-ocid="json.format_button" onClick={format}>
-          Format
+          {t("json_format")}
         </Button>
         <Button
           data-ocid="json.minify_button"
           variant="outline"
           onClick={minify}
         >
-          Minify
+          {t("json_minify")}
         </Button>
         <Button variant="outline" onClick={validate}>
-          Validate
+          {t("json_validate")}
         </Button>
         {status === "valid" && (
           <Badge variant="default" className="bg-green-600">
             <CheckCircle size={12} className="mr-1" />
-            Valid
+            {t("json_valid")}
           </Badge>
         )}
         {status === "error" && (
           <Badge variant="destructive" data-ocid="json.error_state">
             <XCircle size={12} className="mr-1" />
-            Error
+            {t("json_error")}
           </Badge>
         )}
       </div>
@@ -102,7 +104,9 @@ export default function JsonFormatter() {
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <p className="text-xs text-muted-foreground mb-1">Input</p>
+          <p className="text-xs text-muted-foreground mb-1">
+            {t("json_input")}
+          </p>
           <Textarea
             data-ocid="json.input"
             value={input}
@@ -112,7 +116,9 @@ export default function JsonFormatter() {
           />
         </div>
         <div className="relative">
-          <p className="text-xs text-muted-foreground mb-1">Output</p>
+          <p className="text-xs text-muted-foreground mb-1">
+            {t("json_output")}
+          </p>
           <Textarea
             value={output}
             readOnly
@@ -125,7 +131,7 @@ export default function JsonFormatter() {
               className="absolute top-6 right-2"
               onClick={() => {
                 navigator.clipboard.writeText(output);
-                toast.success("Copied!");
+                toast.success(t("copied"));
               }}
             >
               <Copy size={16} />

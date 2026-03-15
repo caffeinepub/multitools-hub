@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/lib/i18n";
 import { ArrowDown, ArrowUp, Copy, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function Base64Tool() {
+  const { t } = useTranslation();
   const [plain, setPlain] = useState("");
   const [encoded, setEncoded] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -41,18 +43,18 @@ export default function Base64Tool() {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Plain Text</p>
+          <p className="text-xs text-muted-foreground">{t("b64_plain")}</p>
           <Textarea
             data-ocid="base64.input"
             value={plain}
             onChange={(e) => setPlain(e.target.value)}
-            placeholder="Enter text to encode..."
+            placeholder={t("b64_placeholder")}
             className="font-mono text-xs min-h-[240px]"
           />
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button data-ocid="base64.encode_button" onClick={encode}>
               <ArrowDown size={14} className="mr-1" />
-              Encode
+              {t("b64_encode")}
             </Button>
             <Button
               data-ocid="base64.upload_button"
@@ -60,7 +62,7 @@ export default function Base64Tool() {
               onClick={() => fileRef.current?.click()}
             >
               <Upload size={14} className="mr-1" />
-              Encode File
+              {t("b64_encode_file")}
             </Button>
             <input
               ref={fileRef}
@@ -74,12 +76,12 @@ export default function Base64Tool() {
           </div>
         </div>
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Base64</p>
+          <p className="text-xs text-muted-foreground">{t("b64_base64")}</p>
           <div className="relative">
             <Textarea
               value={encoded}
               onChange={(e) => setEncoded(e.target.value)}
-              placeholder="Or paste Base64 here to decode..."
+              placeholder={t("b64_paste")}
               className="font-mono text-xs min-h-[240px]"
             />
             {encoded && (
@@ -89,7 +91,7 @@ export default function Base64Tool() {
                 className="absolute top-2 right-2"
                 onClick={() => {
                   navigator.clipboard.writeText(encoded);
-                  toast.success("Copied!");
+                  toast.success(t("copied"));
                 }}
               >
                 <Copy size={14} />
@@ -102,7 +104,7 @@ export default function Base64Tool() {
             onClick={decode}
           >
             <ArrowUp size={14} className="mr-1" />
-            Decode
+            {t("b64_decode")}
           </Button>
         </div>
       </div>

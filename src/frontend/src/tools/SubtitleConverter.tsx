@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/lib/i18n";
 import {
   FORMAT_EXTENSIONS,
   FORMAT_LABELS,
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 const FORMATS = Object.keys(FORMAT_LABELS) as SubtitleFormat[];
 
 export default function SubtitleConverter() {
+  const { t } = useTranslation();
   const [rawText, setRawText] = useState("");
   const [entries, setEntries] = useState<SubtitleEntry[]>([]);
   const [inputFormat, setInputFormat] = useState<SubtitleFormat>("srt");
@@ -127,9 +129,9 @@ export default function SubtitleConverter() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 flex-wrap">
-        <Badge variant="secondary">Subtitle Converter & Editor</Badge>
+        <Badge variant="secondary">{t("tool_subtitle_label")}</Badge>
         <span className="text-muted-foreground text-sm">
-          {entries.length} entries loaded
+          {entries.length} {t("sub_entries")}
         </span>
       </div>
 
@@ -143,19 +145,15 @@ export default function SubtitleConverter() {
         }}
         onDragLeave={() => setDragOver(false)}
         onClick={() => fileRef.current?.click()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+        className={`w-full border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
           dragOver
             ? "border-primary bg-primary/5"
             : "border-border hover:border-primary/50"
         }`}
       >
         <Upload className="mx-auto mb-2 text-muted-foreground" size={24} />
-        <p className="text-sm text-muted-foreground">
-          Drop subtitle file here or click to browse
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          SRT, VTT, ASS, SSA, SUB, SBV, LRC, DFXP, TTML, STL
-        </p>
+        <p className="text-sm text-muted-foreground">{t("sub_drop")}</p>
+        <p className="text-xs text-muted-foreground mt-1">{t("sub_formats")}</p>
         <input
           ref={fileRef}
           type="file"
@@ -169,14 +167,20 @@ export default function SubtitleConverter() {
         />
       </button>
 
-      <div className="flex gap-3 flex-wrap items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Input:</span>
+      {/* Format selectors - stack on mobile */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-wrap">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <span className="text-sm font-medium whitespace-nowrap">
+            {t("sub_input")}
+          </span>
           <Select
             value={inputFormat}
             onValueChange={(v) => setInputFormat(v as SubtitleFormat)}
           >
-            <SelectTrigger className="w-48" data-ocid="subtitle.input_select">
+            <SelectTrigger
+              className="flex-1 sm:w-44"
+              data-ocid="subtitle.input_select"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -188,14 +192,19 @@ export default function SubtitleConverter() {
             </SelectContent>
           </Select>
         </div>
-        <span className="text-muted-foreground">→</span>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Output:</span>
+        <span className="text-muted-foreground hidden sm:inline">→</span>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <span className="text-sm font-medium whitespace-nowrap">
+            {t("sub_output")}
+          </span>
           <Select
             value={outputFormat}
             onValueChange={(v) => setOutputFormat(v as SubtitleFormat)}
           >
-            <SelectTrigger className="w-48" data-ocid="subtitle.output_select">
+            <SelectTrigger
+              className="flex-1 sm:w-44"
+              data-ocid="subtitle.output_select"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -207,34 +216,36 @@ export default function SubtitleConverter() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleParse} data-ocid="subtitle.convert_button">
-          <FileText size={16} className="mr-1" /> Parse / Convert
-        </Button>
-        <Button
-          onClick={handleDownload}
-          data-ocid="subtitle.download_button"
-          variant="outline"
-        >
-          <Download size={16} className="mr-1" /> Download
-        </Button>
+        <div className="flex gap-2 flex-wrap">
+          <Button onClick={handleParse} data-ocid="subtitle.convert_button">
+            <FileText size={16} className="mr-1" /> {t("sub_parse")}
+          </Button>
+          <Button
+            onClick={handleDownload}
+            data-ocid="subtitle.download_button"
+            variant="outline"
+          >
+            <Download size={16} className="mr-1" /> {t("sub_download")}
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="editor">
-        <TabsList>
-          <TabsTrigger value="raw">Raw Input</TabsTrigger>
-          <TabsTrigger value="editor">Editor</TabsTrigger>
-          <TabsTrigger value="preview">Preview Output</TabsTrigger>
+        <TabsList className="flex-wrap h-auto">
+          <TabsTrigger value="raw">{t("sub_raw")}</TabsTrigger>
+          <TabsTrigger value="editor">{t("sub_editor")}</TabsTrigger>
+          <TabsTrigger value="preview">{t("sub_preview")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="raw" className="space-y-2">
           <Textarea
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
-            placeholder="Paste subtitle text here..."
+            placeholder={t("sub_paste")}
             className="font-mono text-xs min-h-[320px]"
           />
           <Button onClick={handleParse} size="sm">
-            Parse Text
+            {t("sub_parse_text")}
           </Button>
         </TabsContent>
 
@@ -245,17 +256,17 @@ export default function SubtitleConverter() {
         >
           <div className="flex items-center gap-2 p-3 bg-muted/40 rounded-lg flex-wrap">
             <Clock size={16} className="text-muted-foreground" />
-            <span className="text-sm">Shift all timings:</span>
+            <span className="text-sm">{t("sub_shift")}</span>
             <Input
               type="number"
               value={offsetMs}
               onChange={(e) => setOffsetMs(Number(e.target.value))}
-              className="w-28"
+              className="w-24"
               placeholder="ms"
             />
             <span className="text-xs text-muted-foreground">ms</span>
             <Button size="sm" variant="outline" onClick={applyShift}>
-              Apply
+              {t("sub_apply")}
             </Button>
             <Button
               size="sm"
@@ -263,7 +274,7 @@ export default function SubtitleConverter() {
               onClick={addEntry}
               data-ocid="subtitle.add_button"
             >
-              <Plus size={14} className="mr-1" /> Add Row
+              <Plus size={14} className="mr-1" /> {t("sub_add_row")}
             </Button>
           </div>
 
@@ -274,7 +285,7 @@ export default function SubtitleConverter() {
                   <th className="px-3 py-2 text-left w-12">#</th>
                   <th className="px-3 py-2 text-left">Start</th>
                   <th className="px-3 py-2 text-left">End</th>
-                  <th className="px-3 py-2 text-left">Duration</th>
+                  <th className="px-3 py-2 text-left">Dur.</th>
                   <th className="px-3 py-2 text-left">Text</th>
                   <th className="px-3 py-2 w-10" />
                 </tr>
@@ -308,7 +319,7 @@ export default function SubtitleConverter() {
                             Number.isNaN(ms2) ? entry.startMs : ms2,
                           );
                         }}
-                        className="font-mono text-xs h-7 w-36"
+                        className="font-mono text-xs h-7 w-32"
                       />
                     </td>
                     <td className="px-3 py-1">
@@ -330,10 +341,10 @@ export default function SubtitleConverter() {
                             Number.isNaN(ms2) ? entry.endMs : ms2,
                           );
                         }}
-                        className="font-mono text-xs h-7 w-36"
+                        className="font-mono text-xs h-7 w-32"
                       />
                     </td>
-                    <td className="px-3 py-1 font-mono text-xs text-muted-foreground">
+                    <td className="px-3 py-1 font-mono text-xs text-muted-foreground whitespace-nowrap">
                       {((entry.endMs - entry.startMs) / 1000).toFixed(2)}s
                     </td>
                     <td className="px-3 py-1">
@@ -342,7 +353,7 @@ export default function SubtitleConverter() {
                         onChange={(e) =>
                           updateEntry(idx, "text", e.target.value)
                         }
-                        className="text-xs h-7 min-w-[200px]"
+                        className="text-xs h-7 min-w-[160px]"
                       />
                     </td>
                     <td className="px-3 py-1">
@@ -363,7 +374,7 @@ export default function SubtitleConverter() {
                       colSpan={6}
                       className="px-3 py-8 text-center text-muted-foreground"
                     >
-                      No entries. Upload a file or paste text.
+                      {t("sub_empty")}
                     </td>
                   </tr>
                 )}
@@ -385,10 +396,10 @@ export default function SubtitleConverter() {
               className="mt-2"
               onClick={() => {
                 navigator.clipboard.writeText(outputPreview);
-                toast.success("Copied!");
+                toast.success(t("copied"));
               }}
             >
-              Copy to Clipboard
+              {t("sub_copy")}
             </Button>
           )}
         </TabsContent>

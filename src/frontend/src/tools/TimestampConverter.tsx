@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/lib/i18n";
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ const TIMEZONES = [
 ];
 
 export default function TimestampConverter() {
+  const { t } = useTranslation();
   const [tsInput, setTsInput] = useState(String(Math.floor(Date.now() / 1000)));
   const [dateInput, setDateInput] = useState("");
   const [results, setResults] = useState<{ label: string; value: string }[]>(
@@ -53,49 +55,49 @@ export default function TimestampConverter() {
       toast.error("Invalid date");
       return;
     }
-    const t = String(Math.floor(d.getTime() / 1000));
-    setTsInput(t);
-    fromTimestamp(t);
+    const ts = String(Math.floor(d.getTime() / 1000));
+    setTsInput(ts);
+    fromTimestamp(ts);
   };
 
   const now = () => {
-    const t = String(Math.floor(Date.now() / 1000));
-    setTsInput(t);
+    const ts = String(Math.floor(Date.now() / 1000));
+    setTsInput(ts);
   };
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <p className="text-sm font-medium">Unix Timestamp</p>
+          <p className="text-sm font-medium">{t("ts_unix")}</p>
           <div className="flex gap-2">
             <Input
               data-ocid="timestamp.input"
               value={tsInput}
               onChange={(e) => setTsInput(e.target.value)}
               placeholder="1234567890"
-              className="font-mono"
+              className="font-mono flex-1"
             />
             <Button variant="outline" onClick={now}>
-              Now
+              {t("ts_now")}
             </Button>
           </div>
           <Button
             data-ocid="timestamp.convert_button"
             onClick={() => fromTimestamp()}
           >
-            Convert
+            {t("ts_convert")}
           </Button>
         </div>
         <div className="space-y-2">
-          <p className="text-sm font-medium">Date / Time</p>
+          <p className="text-sm font-medium">{t("ts_datetime")}</p>
           <Input
             value={dateInput}
             onChange={(e) => setDateInput(e.target.value)}
             type="datetime-local"
           />
           <Button variant="outline" onClick={fromDate}>
-            From Date
+            {t("ts_from_date")}
           </Button>
         </div>
       </div>
@@ -105,18 +107,19 @@ export default function TimestampConverter() {
           {results.map((r) => (
             <div
               key={r.label}
-              className="bg-card border rounded-lg p-3 flex items-center justify-between"
+              className="bg-card border rounded-lg p-3 flex items-center justify-between gap-2"
             >
-              <div>
+              <div className="min-w-0 flex-1">
                 <div className="text-xs text-muted-foreground">{r.label}</div>
-                <div className="font-mono text-sm">{r.value}</div>
+                <div className="font-mono text-sm break-all">{r.value}</div>
               </div>
               <Button
                 size="icon"
                 variant="ghost"
+                className="flex-shrink-0"
                 onClick={() => {
                   navigator.clipboard.writeText(r.value);
-                  toast.success("Copied!");
+                  toast.success(t("copied"));
                 }}
               >
                 <Copy size={14} />

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/lib/i18n";
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -53,6 +54,7 @@ function rgbToCmyk(rIn: number, gIn: number, bIn: number) {
 }
 
 export default function ColorConverter() {
+  const { t } = useTranslation();
   const [hex, setHex] = useState("#3b82f6");
   const [rgb, setRgb] = useState({ r: 59, g: 130, b: 246 });
 
@@ -71,29 +73,33 @@ export default function ColorConverter() {
 
   const copy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success("Copied!");
+    toast.success(t("copied"));
   };
 
   const formats = [
-    { label: "HEX", value: hex },
-    { label: "RGB", value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` },
-    { label: "HSL", value: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)` },
+    { label: t("color_hex"), value: hex },
+    { label: t("color_rgb"), value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` },
+    { label: t("color_hsl"), value: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)` },
     {
-      label: "CMYK",
+      label: t("color_cmyk"),
       value: `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`,
     },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4" data-ocid="color.panel">
+      {/* Color preview + inputs - responsive */}
+      <div
+        className="flex flex-col sm:flex-row items-start gap-4"
+        data-ocid="color.panel"
+      >
         <div
-          className="w-24 h-24 rounded-xl border shadow-md flex-shrink-0"
+          className="w-full sm:w-24 h-20 sm:h-24 rounded-xl border shadow-md flex-shrink-0"
           style={{ backgroundColor: hex }}
         />
-        <div className="space-y-2">
+        <div className="w-full space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm w-12">HEX</span>
+            <span className="text-sm w-12 flex-shrink-0">{t("color_hex")}</span>
             <Input
               data-ocid="color.input"
               value={hex}
@@ -102,34 +108,41 @@ export default function ColorConverter() {
               maxLength={7}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm">R</span>
-            <Input
-              type="number"
-              min={0}
-              max={255}
-              value={rgb.r}
-              onChange={(e) => fromRgb(+e.target.value, rgb.g, rgb.b)}
-              className="w-20"
-            />
-            <span className="text-sm">G</span>
-            <Input
-              type="number"
-              min={0}
-              max={255}
-              value={rgb.g}
-              onChange={(e) => fromRgb(rgb.r, +e.target.value, rgb.b)}
-              className="w-20"
-            />
-            <span className="text-sm">B</span>
-            <Input
-              type="number"
-              min={0}
-              max={255}
-              value={rgb.b}
-              onChange={(e) => fromRgb(rgb.r, rgb.g, +e.target.value)}
-              className="w-20"
-            />
+          {/* RGB inputs - grid on mobile, row on sm+ */}
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-2">
+            <div className="flex items-center gap-1">
+              <span className="text-sm flex-shrink-0">{t("color_r")}</span>
+              <Input
+                type="number"
+                min={0}
+                max={255}
+                value={rgb.r}
+                onChange={(e) => fromRgb(+e.target.value, rgb.g, rgb.b)}
+                className="w-full sm:w-20"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-sm flex-shrink-0">{t("color_g")}</span>
+              <Input
+                type="number"
+                min={0}
+                max={255}
+                value={rgb.g}
+                onChange={(e) => fromRgb(rgb.r, +e.target.value, rgb.b)}
+                className="w-full sm:w-20"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-sm flex-shrink-0">{t("color_b")}</span>
+              <Input
+                type="number"
+                min={0}
+                max={255}
+                value={rgb.b}
+                onChange={(e) => fromRgb(rgb.r, rgb.g, +e.target.value)}
+                className="w-full sm:w-20"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -140,11 +153,16 @@ export default function ColorConverter() {
             key={f.label}
             className="bg-card border rounded-lg p-3 flex items-center justify-between"
           >
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="text-xs text-muted-foreground">{f.label}</div>
-              <div className="font-mono text-sm">{f.value}</div>
+              <div className="font-mono text-sm break-all">{f.value}</div>
             </div>
-            <Button size="icon" variant="ghost" onClick={() => copy(f.value)}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="flex-shrink-0"
+              onClick={() => copy(f.value)}
+            >
               <Copy size={14} />
             </Button>
           </div>

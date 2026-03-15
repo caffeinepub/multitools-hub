@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/lib/i18n";
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -34,6 +35,7 @@ const toDotCase = (s: string) =>
     .replace(/[^a-zA-Z0-9.]/g, "");
 
 export default function TextCaseConverter() {
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
 
@@ -43,31 +45,51 @@ export default function TextCaseConverter() {
 
   const copy = () => {
     navigator.clipboard.writeText(output);
-    toast.success("Copied!");
+    toast.success(t("copied"));
   };
 
   const cases = [
     {
-      label: "UPPERCASE",
+      labelKey: "tc_uppercase" as const,
       fn: (s: string) => s.toUpperCase(),
       ocid: "textcase.uppercase_button",
     },
     {
-      label: "lowercase",
+      labelKey: "tc_lowercase" as const,
       fn: (s: string) => s.toLowerCase(),
       ocid: "textcase.lowercase_button",
     },
-    { label: "Title Case", fn: toTitleCase, ocid: "textcase.title_button" },
     {
-      label: "Sentence case",
+      labelKey: "tc_title" as const,
+      fn: toTitleCase,
+      ocid: "textcase.title_button",
+    },
+    {
+      labelKey: "tc_sentence" as const,
       fn: toSentenceCase,
       ocid: "textcase.sentence_button",
     },
-    { label: "camelCase", fn: toCamelCase, ocid: "textcase.camel_button" },
-    { label: "PascalCase", fn: toPascalCase, ocid: "textcase.pascal_button" },
-    { label: "snake_case", fn: toSnakeCase, ocid: "textcase.snake_button" },
-    { label: "kebab-case", fn: toKebabCase, ocid: "textcase.kebab_button" },
-    { label: "dot.case", fn: toDotCase, ocid: "textcase.dot_button" },
+    {
+      labelKey: "tc_camel" as const,
+      fn: toCamelCase,
+      ocid: "textcase.camel_button",
+    },
+    {
+      labelKey: "tc_pascal" as const,
+      fn: toPascalCase,
+      ocid: "textcase.pascal_button",
+    },
+    {
+      labelKey: "tc_snake" as const,
+      fn: toSnakeCase,
+      ocid: "textcase.snake_button",
+    },
+    {
+      labelKey: "tc_kebab" as const,
+      fn: toKebabCase,
+      ocid: "textcase.kebab_button",
+    },
+    { labelKey: "tc_dot" as const, fn: toDotCase, ocid: "textcase.dot_button" },
   ];
 
   return (
@@ -76,19 +98,19 @@ export default function TextCaseConverter() {
         data-ocid="textcase.input"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Enter your text here..."
+        placeholder={t("tc_placeholder")}
         className="min-h-[140px]"
       />
       <div className="flex flex-wrap gap-2">
         {cases.map((c) => (
           <Button
-            key={c.label}
+            key={c.labelKey}
             variant="outline"
             size="sm"
             data-ocid={c.ocid}
             onClick={() => convert(c.fn)}
           >
-            {c.label}
+            {t(c.labelKey)}
           </Button>
         ))}
       </div>

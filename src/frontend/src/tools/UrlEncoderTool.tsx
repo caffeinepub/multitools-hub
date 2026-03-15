@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/lib/i18n";
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function UrlEncoderTool() {
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
 
@@ -29,22 +30,22 @@ export default function UrlEncoderTool() {
         data-ocid="url.input"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Enter URL or text..."
+        placeholder={t("url_placeholder")}
         className="font-mono text-sm min-h-[120px]"
       />
       <div className="flex gap-2 flex-wrap">
         <Button data-ocid="url.encode_button" onClick={() => encode(true)}>
-          Encode (Full)
+          {t("url_encode_full")}
         </Button>
         <Button variant="outline" onClick={() => encode(false)}>
-          Encode (URI)
+          {t("url_encode_uri")}
         </Button>
         <Button
           data-ocid="url.decode_button"
           variant="outline"
           onClick={decode}
         >
-          Decode
+          {t("url_decode")}
         </Button>
       </div>
       {output && (
@@ -60,7 +61,7 @@ export default function UrlEncoderTool() {
             className="absolute top-2 right-2"
             onClick={() => {
               navigator.clipboard.writeText(output);
-              toast.success("Copied!");
+              toast.success(t("copied"));
             }}
           >
             <Copy size={16} />

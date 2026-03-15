@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Toaster } from "@/components/ui/sonner";
+import { LanguageProvider, useTranslation } from "@/lib/i18n";
 import {
   BarChart3,
   ChevronRight,
@@ -50,106 +51,33 @@ interface Tool {
   categoryColor: string;
 }
 
-const TOOLS: Tool[] = [
-  {
-    id: "subtitle",
-    label: "Subtitle Converter & Editor",
-    description:
-      "Convert between SRT, VTT, ASS, SUB, SBV, LRC, DFXP, STL and edit entries inline.",
-    icon: <FileText size={20} />,
-    category: "Subtitle",
-    categoryColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
-  },
-  {
-    id: "textcase",
-    label: "Text Case Converter",
-    description:
-      "Transform text to UPPER, lower, Title, camelCase, snake_case and more.",
-    icon: <Type size={20} />,
-    category: "Text",
-    categoryColor: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-  },
-  {
-    id: "counter",
-    label: "Word & Character Counter",
-    description:
-      "Count characters, words, sentences, paragraphs, reading and speaking time.",
-    icon: <BarChart3 size={20} />,
-    category: "Text",
-    categoryColor: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-  },
-  {
-    id: "json",
-    label: "JSON Formatter & Validator",
-    description: "Format, minify, and validate JSON with error highlighting.",
-    icon: <Code2 size={20} />,
-    category: "Encoding",
-    categoryColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  },
-  {
-    id: "base64",
-    label: "Base64 Encoder/Decoder",
-    description: "Encode and decode text or files to/from Base64.",
-    icon: <Hash size={20} />,
-    category: "Encoding",
-    categoryColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  },
-  {
-    id: "url",
-    label: "URL Encoder/Decoder",
-    description: "Encode or decode URL-encoded strings and components.",
-    icon: <Link size={20} />,
-    category: "Encoding",
-    categoryColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  },
-  {
-    id: "hash",
-    label: "Hash Generator",
-    description: "Generate MD5, SHA-1, SHA-256, SHA-512 hashes instantly.",
-    icon: <Hash size={20} />,
-    category: "Developer",
-    categoryColor: "bg-green-500/10 text-green-600 dark:text-green-400",
-  },
-  {
-    id: "timestamp",
-    label: "Timestamp Converter",
-    description:
-      "Convert Unix timestamps to/from human-readable dates across timezones.",
-    icon: <Clock size={20} />,
-    category: "Developer",
-    categoryColor: "bg-green-500/10 text-green-600 dark:text-green-400",
-  },
-  {
-    id: "color",
-    label: "Color Converter",
-    description: "Convert colors between HEX, RGB, HSL, and CMYK formats.",
-    icon: <Palette size={20} />,
-    category: "Design",
-    categoryColor: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
-  },
-];
+function ActiveTool({ id }: { id: ToolId }) {
+  switch (id) {
+    case "subtitle":
+      return <SubtitleConverter />;
+    case "textcase":
+      return <TextCaseConverter />;
+    case "json":
+      return <JsonFormatter />;
+    case "base64":
+      return <Base64Tool />;
+    case "url":
+      return <UrlEncoderTool />;
+    case "counter":
+      return <WordCounter />;
+    case "color":
+      return <ColorConverter />;
+    case "hash":
+      return <HashGenerator />;
+    case "timestamp":
+      return <TimestampConverter />;
+    default:
+      return null;
+  }
+}
 
-const CATEGORIES = [
-  { name: "Subtitle", tools: TOOLS.filter((t) => t.category === "Subtitle") },
-  { name: "Text", tools: TOOLS.filter((t) => t.category === "Text") },
-  { name: "Encoding", tools: TOOLS.filter((t) => t.category === "Encoding") },
-  { name: "Developer", tools: TOOLS.filter((t) => t.category === "Developer") },
-  { name: "Design", tools: TOOLS.filter((t) => t.category === "Design") },
-];
-
-const TOOL_COMPONENTS: Partial<Record<ToolId, React.ReactNode>> = {
-  subtitle: <SubtitleConverter />,
-  textcase: <TextCaseConverter />,
-  json: <JsonFormatter />,
-  base64: <Base64Tool />,
-  url: <UrlEncoderTool />,
-  counter: <WordCounter />,
-  color: <ColorConverter />,
-  hash: <HashGenerator />,
-  timestamp: <TimestampConverter />,
-};
-
-export default function App() {
+function AppInner() {
+  const { t, toggleLang } = useTranslation();
   const [activeTool, setActiveTool] = useState<ToolId>("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dark, setDark] = useState(
@@ -165,7 +93,105 @@ export default function App() {
 
   if (dark) document.documentElement.classList.add("dark");
 
-  const currentTool = TOOLS.find((t) => t.id === activeTool);
+  const TOOLS: Tool[] = [
+    {
+      id: "subtitle",
+      label: t("tool_subtitle_label"),
+      description: t("tool_subtitle_desc"),
+      icon: <FileText size={20} />,
+      category: t("cat_subtitle"),
+      categoryColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+    },
+    {
+      id: "textcase",
+      label: t("tool_textcase_label"),
+      description: t("tool_textcase_desc"),
+      icon: <Type size={20} />,
+      category: t("cat_text"),
+      categoryColor: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    },
+    {
+      id: "counter",
+      label: t("tool_counter_label"),
+      description: t("tool_counter_desc"),
+      icon: <BarChart3 size={20} />,
+      category: t("cat_text"),
+      categoryColor: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    },
+    {
+      id: "json",
+      label: t("tool_json_label"),
+      description: t("tool_json_desc"),
+      icon: <Code2 size={20} />,
+      category: t("cat_encoding"),
+      categoryColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    },
+    {
+      id: "base64",
+      label: t("tool_base64_label"),
+      description: t("tool_base64_desc"),
+      icon: <Hash size={20} />,
+      category: t("cat_encoding"),
+      categoryColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    },
+    {
+      id: "url",
+      label: t("tool_url_label"),
+      description: t("tool_url_desc"),
+      icon: <Link size={20} />,
+      category: t("cat_encoding"),
+      categoryColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    },
+    {
+      id: "hash",
+      label: t("tool_hash_label"),
+      description: t("tool_hash_desc"),
+      icon: <Hash size={20} />,
+      category: t("cat_developer"),
+      categoryColor: "bg-green-500/10 text-green-600 dark:text-green-400",
+    },
+    {
+      id: "timestamp",
+      label: t("tool_timestamp_label"),
+      description: t("tool_timestamp_desc"),
+      icon: <Clock size={20} />,
+      category: t("cat_developer"),
+      categoryColor: "bg-green-500/10 text-green-600 dark:text-green-400",
+    },
+    {
+      id: "color",
+      label: t("tool_color_label"),
+      description: t("tool_color_desc"),
+      icon: <Palette size={20} />,
+      category: t("cat_design"),
+      categoryColor: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
+    },
+  ];
+
+  const CATEGORIES = [
+    {
+      name: t("cat_subtitle"),
+      tools: TOOLS.filter((t2) => t2.id === "subtitle"),
+    },
+    {
+      name: t("cat_text"),
+      tools: TOOLS.filter((t2) => t2.category === t("cat_text")),
+    },
+    {
+      name: t("cat_encoding"),
+      tools: TOOLS.filter((t2) => t2.category === t("cat_encoding")),
+    },
+    {
+      name: t("cat_developer"),
+      tools: TOOLS.filter((t2) => t2.category === t("cat_developer")),
+    },
+    {
+      name: t("cat_design"),
+      tools: TOOLS.filter((t2) => t2.category === t("cat_design")),
+    },
+  ];
+
+  const currentTool = TOOLS.find((tool) => tool.id === activeTool);
 
   const navigate = (id: ToolId) => {
     setActiveTool(id);
@@ -212,7 +238,7 @@ export default function App() {
             }`}
           >
             <Home size={15} />
-            <span>Home</span>
+            <span>{t("home")}</span>
           </button>
 
           {CATEGORIES.map((cat, ci) => (
@@ -255,34 +281,48 @@ export default function App() {
         />
       )}
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Header */}
         <header className="flex items-center gap-3 px-4 py-3 border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
           <Button
             size="icon"
             variant="ghost"
-            className="lg:hidden h-8 w-8"
+            className="lg:hidden h-8 w-8 flex-shrink-0"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu size={16} />
           </Button>
           {activeTool !== "home" && currentTool && (
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-1.5 text-sm min-w-0 flex-1">
               <button
                 type="button"
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground flex-shrink-0"
                 onClick={() => navigate("home")}
               >
-                Home
+                {t("home")}
               </button>
-              <ChevronRight size={14} className="text-muted-foreground" />
-              <span className="font-medium">{currentTool.label}</span>
+              <ChevronRight
+                size={14}
+                className="text-muted-foreground flex-shrink-0"
+              />
+              <span className="font-medium truncate">{currentTool.label}</span>
             </div>
           )}
           {activeTool === "home" && (
-            <span className="font-semibold text-sm">MultiTools Hub</span>
+            <span className="font-semibold text-sm flex-1">
+              {t("app_title")}
+            </span>
           )}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              data-ocid="lang.toggle"
+              onClick={toggleLang}
+              className="h-8 px-2 text-xs font-semibold"
+            >
+              {t("lang_toggle")}
+            </Button>
             <Button
               size="icon"
               variant="ghost"
@@ -296,7 +336,7 @@ export default function App() {
         </header>
 
         <ScrollArea className="flex-1">
-          <main className="p-6 max-w-5xl mx-auto">
+          <main className="p-4 sm:p-6 max-w-5xl mx-auto">
             {activeTool === "home" ? (
               <div>
                 <div className="mb-8">
@@ -304,14 +344,13 @@ export default function App() {
                     Multi<span className="text-primary">Tools</span> Hub
                   </h1>
                   <p className="text-muted-foreground">
-                    A collection of free, client-side utilities. No uploads, no
-                    tracking, all processing happens in your browser.
+                    {t("app_description")}
                   </p>
                 </div>
                 {CATEGORIES.map((cat) => (
                   <div key={cat.name} className="mb-8">
                     <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                      {cat.name} Tools
+                      {cat.name} {t("tools_label")}
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {cat.tools.map((tool) => (
@@ -322,7 +361,7 @@ export default function App() {
                           className="bg-card border rounded-xl p-4 text-left hover:border-primary/50 hover:shadow-md transition-all group"
                         >
                           <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                            <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors flex-shrink-0">
                               {tool.icon}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -353,10 +392,10 @@ export default function App() {
                 {currentTool && (
                   <div className="mb-6">
                     <div className="flex items-center gap-3 mb-1">
-                      <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <div className="p-2 rounded-lg bg-primary/10 text-primary flex-shrink-0">
                         {currentTool.icon}
                       </div>
-                      <h1 className="text-2xl font-bold">
+                      <h1 className="text-xl sm:text-2xl font-bold">
                         {currentTool.label}
                       </h1>
                     </div>
@@ -365,7 +404,7 @@ export default function App() {
                     </p>
                   </div>
                 )}
-                {TOOL_COMPONENTS[activeTool]}
+                <ActiveTool id={activeTool} />
               </div>
             )}
           </main>
@@ -373,5 +412,13 @@ export default function App() {
       </div>
       <Toaster />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppInner />
+    </LanguageProvider>
   );
 }
