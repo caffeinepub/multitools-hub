@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/assets/fonts/JetBrainsMono.woff2') format('woff2');
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/assets/fonts/BricolageGrotesque.woff2') format('woff2');
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 0.375rem;
+    /* Light mode - clean slate with cyan accent */
+    --background: 0.98 0 0;
+    --foreground: 0.15 0.01 250;
+    --card: 1 0 0;
+    --card-foreground: 0.15 0.01 250;
+    --popover: 1 0 0;
+    --popover-foreground: 0.15 0.01 250;
+    --primary: 0.6 0.16 200;
+    --primary-foreground: 1 0 0;
+    --secondary: 0.94 0.01 240;
+    --secondary-foreground: 0.15 0.01 250;
+    --muted: 0.94 0.01 240;
+    --muted-foreground: 0.5 0.02 250;
+    --accent: 0.55 0.18 200;
+    --accent-foreground: 1 0 0;
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 1 0 0;
+    --border: 0.88 0.01 240;
+    --input: 0.88 0.01 240;
+    --ring: 0.6 0.16 200;
+    --chart-1: 0.6 0.16 200;
+    --chart-2: 0.65 0.18 150;
+    --chart-3: 0.7 0.2 120;
+    --chart-4: 0.55 0.18 280;
+    --chart-5: 0.65 0.2 30;
+    --sidebar: 0.12 0.015 250;
+    --sidebar-foreground: 0.85 0.01 240;
+    --sidebar-primary: 0.6 0.16 200;
+    --sidebar-primary-foreground: 1 0 0;
+    --sidebar-accent: 0.2 0.02 250;
+    --sidebar-accent-foreground: 0.85 0.01 240;
+    --sidebar-border: 0.22 0.02 250;
+    --sidebar-ring: 0.6 0.16 200;
+  }
+
+  .dark {
+    --background: 0.1 0.012 250;
+    --foreground: 0.92 0.01 240;
+    --card: 0.14 0.015 250;
+    --card-foreground: 0.92 0.01 240;
+    --popover: 0.18 0.015 250;
+    --popover-foreground: 0.92 0.01 240;
+    --primary: 0.65 0.18 200;
+    --primary-foreground: 0.1 0.012 250;
+    --secondary: 0.2 0.02 250;
+    --secondary-foreground: 0.92 0.01 240;
+    --muted: 0.2 0.02 250;
+    --muted-foreground: 0.6 0.02 240;
+    --accent: 0.65 0.18 200;
+    --accent-foreground: 0.1 0.012 250;
+    --destructive: 0.65 0.22 25;
+    --destructive-foreground: 1 0 0;
+    --border: 0.25 0.02 250;
+    --input: 0.22 0.02 250;
+    --ring: 0.65 0.18 200;
+    --chart-1: 0.65 0.18 200;
+    --chart-2: 0.65 0.18 150;
+    --chart-3: 0.7 0.2 120;
+    --chart-4: 0.6 0.2 280;
+    --chart-5: 0.7 0.22 30;
+    --sidebar: 0.09 0.012 250;
+    --sidebar-foreground: 0.85 0.01 240;
+    --sidebar-primary: 0.65 0.18 200;
+    --sidebar-primary-foreground: 0.1 0.012 250;
+    --sidebar-accent: 0.16 0.018 250;
+    --sidebar-accent-foreground: 0.85 0.01 240;
+    --sidebar-border: 0.2 0.02 250;
+    --sidebar-ring: 0.65 0.18 200;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+}
