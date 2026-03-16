@@ -1,15 +1,10 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "@/lib/i18n";
-import { Loader2, Lock, User } from "lucide-react";
+import { Loader2, Lock, User, Zap } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { backendInterface } from "../backend";
@@ -19,6 +14,46 @@ interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
   onSuccess: (token: string, username: string, role: string) => void;
   actor: backendInterface | null;
+}
+
+function PasswordStrength({ password }: { password: string }) {
+  const len = password.length;
+  const strength = len === 0 ? 0 : len < 6 ? 1 : len < 9 ? 2 : len < 12 ? 3 : 4;
+  const labels = ["", "Weak", "Fair", "Good", "Strong"];
+  const colors = [
+    "",
+    "bg-red-500",
+    "bg-amber-500",
+    "bg-lime-500",
+    "bg-green-500",
+  ];
+  const textColors = [
+    "",
+    "text-red-500",
+    "text-amber-500",
+    "text-lime-600",
+    "text-green-600",
+  ];
+
+  if (len === 0) return null;
+
+  return (
+    <div className="mt-2">
+      <div className="flex gap-1 mb-1">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className={`strength-bar-segment flex-1 ${
+              i <= strength ? colors[strength] : "bg-border"
+            }`}
+          />
+        ))}
+      </div>
+      <p className={`text-xs font-medium ${textColors[strength]}`}>
+        {labels[strength]}
+      </p>
+    </div>
+  );
 }
 
 export default function AuthModal({
@@ -101,10 +136,21 @@ export default function AuthModal({
       }}
     >
       <DialogContent className="sm:max-w-md" data-ocid="auth.dialog">
+        {/* Branded Header */}
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            <span className="gradient-text">MultiTools Hub</span>
-          </DialogTitle>
+          <div className="flex flex-col items-center gap-3 pb-2">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <Zap size={22} className="text-white" />
+            </div>
+            <div className="text-center">
+              <h2 className="font-display text-xl font-black text-foreground">
+                MultiTools <span className="gradient-text">Hub</span>
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {tab === "login" ? "Welcome back" : "Create your account"}
+              </p>
+            </div>
+          </div>
         </DialogHeader>
 
         <Tabs
@@ -156,7 +202,7 @@ export default function AuthModal({
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                    placeholder="••••••••"
                     className="pl-9"
                     autoComplete="current-password"
                   />
@@ -170,15 +216,15 @@ export default function AuthModal({
                   {error}
                 </p>
               )}
-              <Button
+              <button
                 type="submit"
-                className="w-full"
                 disabled={loading}
                 data-ocid="auth.submit_button"
+                className="btn-gradient w-full h-10 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold"
               >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {loading ? "Signing in..." : t("auth_submit_login")}
-              </Button>
+              </button>
             </form>
           </TabsContent>
 
@@ -215,11 +261,12 @@ export default function AuthModal({
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                    placeholder="••••••••"
                     className="pl-9"
                     autoComplete="new-password"
                   />
                 </div>
+                <PasswordStrength password={password} />
               </div>
               {error && (
                 <p
@@ -229,15 +276,15 @@ export default function AuthModal({
                   {error}
                 </p>
               )}
-              <Button
+              <button
                 type="submit"
-                className="w-full"
                 disabled={loading}
                 data-ocid="auth.submit_button"
+                className="btn-gradient w-full h-10 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold"
               >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {loading ? "Creating account..." : t("auth_submit_register")}
-              </Button>
+              </button>
             </form>
           </TabsContent>
         </Tabs>

@@ -18,6 +18,7 @@ import {
   Clock,
   Code2,
   FileSpreadsheet,
+  FileStack,
   FileText,
   FileType,
   Globe,
@@ -25,11 +26,14 @@ import {
   Home,
   KeyRound,
   Link,
+  Lock,
   LogIn,
   LogOut,
   Menu,
+  Minimize2,
   Moon,
   Palette,
+  Scissors,
   Search,
   Shield,
   ShieldCheck,
@@ -47,6 +51,9 @@ import ColorConverter from "./tools/ColorConverter";
 import ExcelTool from "./tools/ExcelTool";
 import HashGenerator from "./tools/HashGenerator";
 import JsonFormatter from "./tools/JsonFormatter";
+import PdfCompressor from "./tools/PdfCompressor";
+import PdfMerger from "./tools/PdfMerger";
+import PdfSplitter from "./tools/PdfSplitter";
 import PdfTool from "./tools/PdfTool";
 import SubtitleConverter from "./tools/SubtitleConverter";
 import TextCaseConverter from "./tools/TextCaseConverter";
@@ -69,7 +76,10 @@ type ToolId =
   | "timestamp"
   | "pdf"
   | "word"
-  | "excel";
+  | "excel"
+  | "pdf-merger"
+  | "pdf-splitter"
+  | "pdf-compressor";
 
 interface Tool {
   id: ToolId;
@@ -78,12 +88,14 @@ interface Tool {
   icon: React.ReactNode;
   category: string;
   color: string;
+  popular?: boolean;
 }
 
 interface Category {
   name: string;
   icon: React.ReactNode;
   tools: Tool[];
+  color: string;
 }
 
 interface AuthState {
@@ -120,10 +132,26 @@ function ActiveTool({ id }: { id: ToolId }) {
       return <WordTool />;
     case "excel":
       return <ExcelTool />;
+    case "pdf-merger":
+      return <PdfMerger />;
+    case "pdf-splitter":
+      return <PdfSplitter />;
+    case "pdf-compressor":
+      return <PdfCompressor />;
     default:
       return null;
   }
 }
+
+const POPULAR_TOOLS: ToolId[] = ["json", "base64", "subtitle"];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  Subtitle: "#06b6d4", // cyan
+  Text: "#8b5cf6", // violet
+  Dev: "#f59e0b", // amber
+  Security: "#22c55e", // green
+  File: "#f43f5e", // rose
+};
 
 function AppInner() {
   const { t, toggleLang } = useTranslation();
@@ -139,7 +167,6 @@ function AppInner() {
   const [collapsedCats, setCollapsedCats] = useState<Set<string>>(new Set());
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // Restore session on mount
   useEffect(() => {
     if (!actor) return;
     const token = localStorage.getItem("mth_token");
@@ -158,12 +185,10 @@ function AppInner() {
       });
   }, [actor]);
 
-  // Dark mode
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  // Keyboard shortcut Cmd+K
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -187,6 +212,7 @@ function AppInner() {
       icon: <FileText size={18} />,
       category: "Subtitle",
       color: "text-cyan-500",
+      popular: true,
     },
     {
       id: "textcase",
@@ -211,6 +237,7 @@ function AppInner() {
       icon: <Code2 size={18} />,
       category: "Dev",
       color: "text-amber-500",
+      popular: true,
     },
     {
       id: "base64",
@@ -219,6 +246,7 @@ function AppInner() {
       icon: <Hash size={18} />,
       category: "Dev",
       color: "text-amber-500",
+      popular: true,
     },
     {
       id: "url",
@@ -276,6 +304,30 @@ function AppInner() {
       category: "File",
       color: "text-rose-500",
     },
+    {
+      id: "pdf-merger" as ToolId,
+      labelKey: "tool_pdfmerger_label",
+      descKey: "tool_pdfmerger_desc",
+      icon: <FileStack size={18} />,
+      category: "File",
+      color: "text-rose-500",
+    },
+    {
+      id: "pdf-splitter" as ToolId,
+      labelKey: "tool_pdfsplitter_label",
+      descKey: "tool_pdfsplitter_desc",
+      icon: <Scissors size={18} />,
+      category: "File",
+      color: "text-rose-500",
+    },
+    {
+      id: "pdf-compressor" as ToolId,
+      labelKey: "tool_pdfcompressor_label",
+      descKey: "tool_pdfcompressor_desc",
+      icon: <Minimize2 size={18} />,
+      category: "File",
+      color: "text-rose-500",
+    },
   ];
 
   const CATEGORIES: Category[] = [
@@ -283,26 +335,31 @@ function AppInner() {
       name: "Subtitle",
       icon: <Globe size={14} />,
       tools: TOOLS.filter((tool) => tool.category === "Subtitle"),
+      color: CATEGORY_COLORS.Subtitle,
     },
     {
       name: "Text",
       icon: <Type size={14} />,
       tools: TOOLS.filter((tool) => tool.category === "Text"),
+      color: CATEGORY_COLORS.Text,
     },
     {
       name: "Dev",
       icon: <Code2 size={14} />,
       tools: TOOLS.filter((tool) => tool.category === "Dev"),
+      color: CATEGORY_COLORS.Dev,
     },
     {
       name: "Security",
       icon: <Shield size={14} />,
       tools: TOOLS.filter((tool) => tool.category === "Security"),
+      color: CATEGORY_COLORS.Security,
     },
     {
       name: "File",
       icon: <FileText size={14} />,
       tools: TOOLS.filter((tool) => tool.category === "File"),
+      color: CATEGORY_COLORS.File,
     },
   ];
 
@@ -398,7 +455,7 @@ function AppInner() {
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
             <Zap size={14} className="text-white" />
           </div>
-          <span className="font-bold text-sidebar-foreground text-sm tracking-tight">
+          <span className="font-bold text-sidebar-foreground text-sm tracking-tight font-display">
             MultiTools <span className="text-primary">Hub</span>
           </span>
           <Button
@@ -474,6 +531,11 @@ function AppInner() {
                         <span className="truncate">
                           {t(tool.labelKey as Parameters<typeof t>[0])}
                         </span>
+                        {POPULAR_TOOLS.includes(tool.id) && (
+                          <span className="ml-auto text-[9px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
+                            HOT
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -627,28 +689,77 @@ function AppInner() {
           <main className="p-4 sm:p-6 max-w-5xl mx-auto">
             {activeTool === "home" ? (
               <div>
-                <div className="mb-10">
-                  <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight">
-                    Multi<span className="gradient-text">Tools</span> Hub
-                  </h1>
-                  <p className="text-muted-foreground text-lg max-w-xl mb-6">
-                    {t("app_description")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
+                {/* Hero Section */}
+                <div className="hero-mesh mb-12 pt-2">
+                  <div
+                    className="animate-fade-up"
+                    style={{ animationDelay: "0ms" }}
+                  >
+                    <div className="inline-flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-5">
+                      <Zap size={11} />
+                      12 Professional Tools — All Client-Side
+                    </div>
+                  </div>
+                  <div
+                    className="animate-fade-up"
+                    style={{ animationDelay: "60ms" }}
+                  >
+                    <h1 className="font-display font-black leading-[1.05] mb-4">
+                      <span className="block text-4xl sm:text-5xl lg:text-6xl text-foreground">
+                        The Ultimate
+                      </span>
+                      <span className="block text-4xl sm:text-5xl lg:text-6xl gradient-text">
+                        Tools Hub
+                      </span>
+                    </h1>
+                  </div>
+                  <div
+                    className="animate-fade-up"
+                    style={{ animationDelay: "120ms" }}
+                  >
+                    <p className="text-muted-foreground text-base sm:text-lg max-w-lg mb-8">
+                      {t("app_description")}
+                    </p>
+                  </div>
+                  <div
+                    className="animate-fade-up flex flex-wrap gap-3"
+                    style={{ animationDelay: "180ms" }}
+                  >
                     {[
-                      { icon: <Zap size={13} />, label: t("stats_tools") },
-                      { icon: <Shield size={13} />, label: t("stats_client") },
                       {
-                        icon: <LogIn size={13} />,
-                        label: t("stats_no_signup"),
+                        icon: <Zap size={16} />,
+                        value: "12",
+                        label: "Tools",
+                        color: "text-primary",
                       },
-                    ].map(({ icon, label }) => (
+                      {
+                        icon: <Lock size={16} />,
+                        value: "100%",
+                        label: "Client-side",
+                        color: "text-green-500",
+                      },
+                      {
+                        icon: <LogIn size={16} />,
+                        value: "0",
+                        label: "Sign-up needed",
+                        color: "text-amber-500",
+                      },
+                    ].map(({ icon, value, label, color }) => (
                       <div
                         key={label}
-                        className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full"
+                        className="flex items-center gap-3 bg-card border border-border px-4 py-3 rounded-xl shadow-sm"
                       >
-                        {icon}
-                        {label}
+                        <span className={color}>{icon}</span>
+                        <div>
+                          <div
+                            className={`text-lg font-black font-display leading-none ${color}`}
+                          >
+                            {value}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {label}
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -670,6 +781,7 @@ function AppInner() {
                             active={false}
                             onClick={() => navigate(tool.id)}
                             tFn={t as TranslationFn}
+                            categoryColor={CATEGORY_COLORS[tool.category]}
                           />
                         ))}
                       </div>
@@ -686,8 +798,16 @@ function AppInner() {
                 ) : (
                   CATEGORIES.map((cat) => (
                     <div key={cat.name} className="mb-10">
-                      <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
-                        {cat.icon}
+                      <h2
+                        className="font-display text-sm font-bold uppercase tracking-widest mb-5 flex items-center gap-2.5"
+                        style={{ color: cat.color }}
+                      >
+                        <span
+                          className="w-6 h-6 rounded-md flex items-center justify-center"
+                          style={{ background: `${cat.color}22` }}
+                        >
+                          {cat.icon}
+                        </span>
                         {catLabels[cat.name]}
                       </h2>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -698,6 +818,7 @@ function AppInner() {
                             active={activeTool === tool.id}
                             onClick={() => navigate(tool.id)}
                             tFn={t as TranslationFn}
+                            categoryColor={cat.color}
                           />
                         ))}
                       </div>
@@ -733,7 +854,7 @@ function AppInner() {
                         {currentTool.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h1 className="text-2xl font-bold mb-1">
+                        <h1 className="font-display text-2xl font-bold mb-1">
                           {t(currentTool.labelKey as Parameters<typeof t>[0])}
                         </h1>
                         <p className="text-muted-foreground text-sm">
@@ -780,20 +901,28 @@ function ToolCard({
   active,
   onClick,
   tFn,
+  categoryColor,
 }: {
   tool: Tool;
   active: boolean;
   onClick: () => void;
   tFn: TranslationFn;
+  categoryColor: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`tool-card bg-card border rounded-xl p-4 text-left w-full group ${
+      style={
+        {
+          borderLeftColor: active ? categoryColor : undefined,
+          "--hover-color": categoryColor,
+        } as React.CSSProperties
+      }
+      className={`tool-card bg-card border-l-4 border rounded-xl p-4 text-left w-full group transition-all ${
         active
-          ? "border-primary/60 shadow-md"
-          : "border-border hover:border-primary/40"
+          ? "border-primary/40 shadow-md"
+          : "border-l-transparent border-border hover:border-l-[var(--hover-color)] hover:border-primary/20"
       }`}
     >
       <div className="flex items-start gap-3">
@@ -805,8 +934,15 @@ function ToolCard({
           {tool.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm mb-1 truncate">
-            {tFn(tool.labelKey)}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-semibold text-sm truncate">
+              {tFn(tool.labelKey)}
+            </span>
+            {tool.popular && (
+              <span className="flex-shrink-0 text-[9px] font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                Popular
+              </span>
+            )}
           </div>
           <p className="text-xs text-muted-foreground line-clamp-2">
             {tFn(tool.descKey)}
