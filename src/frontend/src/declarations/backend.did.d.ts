@@ -10,7 +10,32 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE { 'getGreeting' : ActorMethod<[], string> }
+export type SessionToken = string;
+export interface UserProfile { 'username' : string, 'role' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getGreeting' : ActorMethod<[], string>,
+  'getProfile' : ActorMethod<
+    [SessionToken],
+    [] | [{ 'username' : string, 'role' : string }]
+  >,
+  'getTopTools' : ActorMethod<[], Array<[string, bigint]>>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isAdmin' : ActorMethod<[SessionToken], boolean>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'listUsers' : ActorMethod<[SessionToken], Array<string>>,
+  'login' : ActorMethod<[string, string], string>,
+  'logout' : ActorMethod<[SessionToken], undefined>,
+  'recordUsage' : ActorMethod<[string], undefined>,
+  'register' : ActorMethod<[string, string], string>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

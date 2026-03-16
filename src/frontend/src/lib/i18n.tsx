@@ -7,14 +7,15 @@ const translations = {
     // Nav
     home: "Home",
     cat_subtitle: "Subtitle",
-    cat_text: "Text",
-    cat_encoding: "Encoding",
-    cat_developer: "Developer",
+    cat_text: "Text Tools",
+    cat_encoding: "Developer Tools",
+    cat_developer: "Security & Utility",
     cat_design: "Design",
+    cat_file: "File Tools",
     lang_toggle: "FR",
     app_title: "MultiTools Hub",
     app_description:
-      "A collection of free, client-side utilities. No uploads, no tracking, all processing happens in your browser.",
+      "12 powerful browser-based utilities. No uploads, no tracking — everything runs locally in your browser.",
     tools_label: "Tools",
     // Tool labels
     tool_subtitle_label: "Subtitle Converter & Editor",
@@ -40,6 +41,15 @@ const translations = {
       "Convert Unix timestamps to/from human-readable dates across timezones.",
     tool_color_label: "Color Converter",
     tool_color_desc: "Convert colors between HEX, RGB, HSL, and CMYK formats.",
+    tool_pdf_label: "PDF Tools",
+    tool_pdf_desc:
+      "View PDF page count, preview first page, and merge multiple PDFs.",
+    tool_word_label: "Word Document Tool",
+    tool_word_desc:
+      "Upload .docx files to preview content and extract plain text.",
+    tool_excel_label: "Excel / CSV Viewer",
+    tool_excel_desc:
+      "Upload .xlsx or .csv files to view as a table and download as CSV.",
     // SubtitleConverter
     sub_drop: "Drop subtitle file here or click to browse",
     sub_formats: "SRT, VTT, ASS, SSA, SUB, SBV, LRC, DFXP, TTML, STL",
@@ -120,52 +130,73 @@ const translations = {
     color_r: "R",
     color_g: "G",
     color_b: "B",
+    // Auth
+    auth_login: "Login",
+    auth_register: "Register",
+    auth_username: "Username",
+    auth_password: "Password",
+    auth_submit_login: "Sign In",
+    auth_submit_register: "Create Account",
+    auth_logout: "Sign Out",
+    auth_admin_panel: "Admin Panel",
+    auth_logged_in_as: "Signed in as",
     // Common
     copy: "Copy",
     copied: "Copied!",
+    search_placeholder: "Search tools...",
+    stats_tools: "12 tools",
+    stats_client: "100% client-side",
+    stats_no_signup: "No signup required",
   },
   fr: {
     // Nav
     home: "Accueil",
     cat_subtitle: "Sous-titres",
-    cat_text: "Texte",
-    cat_encoding: "Encodage",
-    cat_developer: "Développeur",
+    cat_text: "Outils Texte",
+    cat_encoding: "Outils Dev",
+    cat_developer: "Sécurité & Utilitaires",
     cat_design: "Design",
+    cat_file: "Outils Fichiers",
     lang_toggle: "EN",
     app_title: "MultiTools Hub",
     app_description:
-      "Une collection d'utilitaires gratuits côté client. Pas de téléchargement, pas de suivi, tout le traitement se fait dans votre navigateur.",
+      "12 utilitaires puissants dans votre navigateur. Pas de téléchargement, pas de suivi — tout fonctionne localement.",
     tools_label: "Outils",
     // Tool labels
     tool_subtitle_label: "Convertisseur & Éditeur de Sous-titres",
     tool_subtitle_desc:
       "Convertissez entre SRT, VTT, ASS, SUB, SBV, LRC, DFXP, STL et modifiez les entrées en ligne.",
-    tool_textcase_label: "Convertisseur de Casse de Texte",
+    tool_textcase_label: "Convertisseur de Casse",
     tool_textcase_desc:
-      "Transformez le texte en MAJUSCULES, minuscules, Titre, camelCase, snake_case et plus encore.",
+      "Transformez le texte en MAJUSCULES, minuscules, Titre, camelCase, snake_case et plus.",
     tool_counter_label: "Compteur de Mots & Caractères",
     tool_counter_desc:
-      "Comptez les caractères, mots, phrases, paragraphes, temps de lecture et de parole.",
+      "Comptez caractères, mots, phrases, paragraphes et temps de lecture.",
     tool_json_label: "Formateur & Validateur JSON",
     tool_json_desc:
       "Formatez, minifiez et validez le JSON avec mise en évidence des erreurs.",
     tool_base64_label: "Encodeur/Décodeur Base64",
     tool_base64_desc: "Encodez et décodez du texte ou des fichiers en Base64.",
     tool_url_label: "Encodeur/Décodeur URL",
-    tool_url_desc:
-      "Encodez ou décodez des chaînes et composants encodés en URL.",
+    tool_url_desc: "Encodez ou décodez des chaînes URL.",
     tool_hash_label: "Générateur de Hash",
-    tool_hash_desc:
-      "Générez des hachages MD5, SHA-1, SHA-256, SHA-512 instantanément.",
+    tool_hash_desc: "Générez des hachages MD5, SHA-1, SHA-256, SHA-512.",
     tool_timestamp_label: "Convertisseur de Timestamp",
     tool_timestamp_desc:
-      "Convertissez les timestamps Unix vers/depuis des dates lisibles dans différents fuseaux horaires.",
+      "Convertissez les timestamps Unix vers des dates lisibles.",
     tool_color_label: "Convertisseur de Couleur",
-    tool_color_desc:
-      "Convertissez des couleurs entre les formats HEX, RGB, HSL et CMYK.",
+    tool_color_desc: "Convertissez des couleurs entre HEX, RGB, HSL et CMYK.",
+    tool_pdf_label: "Outils PDF",
+    tool_pdf_desc:
+      "Visualisez et fusionnez des fichiers PDF dans le navigateur.",
+    tool_word_label: "Outil Document Word",
+    tool_word_desc:
+      "Importez des fichiers .docx pour prévisualiser et extraire le texte.",
+    tool_excel_label: "Visionneur Excel / CSV",
+    tool_excel_desc:
+      "Importez des fichiers .xlsx ou .csv pour les visualiser en tableau.",
     // SubtitleConverter
-    sub_drop: "Déposez le fichier de sous-titres ici ou cliquez pour parcourir",
+    sub_drop: "Déposez le fichier ici ou cliquez pour parcourir",
     sub_formats: "SRT, VTT, ASS, SSA, SUB, SBV, LRC, DFXP, TTML, STL",
     sub_input: "Entrée :",
     sub_output: "Sortie :",
@@ -173,7 +204,7 @@ const translations = {
     sub_download: "Télécharger",
     sub_raw: "Texte brut",
     sub_editor: "Éditeur",
-    sub_preview: "Aperçu de la sortie",
+    sub_preview: "Aperçu",
     sub_shift: "Décaler tous les timings :",
     sub_apply: "Appliquer",
     sub_add_row: "Ajouter une ligne",
@@ -244,9 +275,23 @@ const translations = {
     color_r: "R",
     color_g: "V",
     color_b: "B",
+    // Auth
+    auth_login: "Connexion",
+    auth_register: "S'inscrire",
+    auth_username: "Nom d'utilisateur",
+    auth_password: "Mot de passe",
+    auth_submit_login: "Se connecter",
+    auth_submit_register: "Créer un compte",
+    auth_logout: "Se déconnecter",
+    auth_admin_panel: "Panneau d'administration",
+    auth_logged_in_as: "Connecté en tant que",
     // Common
     copy: "Copier",
     copied: "Copié !",
+    search_placeholder: "Rechercher des outils...",
+    stats_tools: "12 outils",
+    stats_client: "100% côté client",
+    stats_no_signup: "Sans inscription",
   },
 };
 

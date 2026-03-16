@@ -8,14 +8,89 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
+export const UserProfile = IDL.Record({
+  'username' : IDL.Text,
+  'role' : IDL.Text,
+});
+export const SessionToken = IDL.Text;
+
 export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getGreeting' : IDL.Func([], [IDL.Text], []),
+  'getProfile' : IDL.Func(
+      [SessionToken],
+      [IDL.Opt(IDL.Record({ 'username' : IDL.Text, 'role' : IDL.Text }))],
+      ['query'],
+    ),
+  'getTopTools' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
+      ['query'],
+    ),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'isAdmin' : IDL.Func([SessionToken], [IDL.Bool], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'listUsers' : IDL.Func([SessionToken], [IDL.Vec(IDL.Text)], ['query']),
+  'login' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
+  'logout' : IDL.Func([SessionToken], [], []),
+  'recordUsage' : IDL.Func([IDL.Text], [], []),
+  'register' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  return IDL.Service({ 'getGreeting' : IDL.Func([], [IDL.Text], []) });
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
+  const UserProfile = IDL.Record({ 'username' : IDL.Text, 'role' : IDL.Text });
+  const SessionToken = IDL.Text;
+  
+  return IDL.Service({
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getGreeting' : IDL.Func([], [IDL.Text], []),
+    'getProfile' : IDL.Func(
+        [SessionToken],
+        [IDL.Opt(IDL.Record({ 'username' : IDL.Text, 'role' : IDL.Text }))],
+        ['query'],
+      ),
+    'getTopTools' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
+        ['query'],
+      ),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'isAdmin' : IDL.Func([SessionToken], [IDL.Bool], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'listUsers' : IDL.Func([SessionToken], [IDL.Vec(IDL.Text)], ['query']),
+    'login' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
+    'logout' : IDL.Func([SessionToken], [], []),
+    'recordUsage' : IDL.Func([IDL.Text], [], []),
+    'register' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  });
 };
 
 export const init = ({ IDL }) => { return []; };
